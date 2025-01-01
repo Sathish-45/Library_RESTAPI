@@ -3,10 +3,13 @@ from sqlalchemy import text
 from flask import make_response, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_jwt_extended import JWTManager, create_access_token, get_jwt_identity, jwt_required, verify_jwt_in_request
-from jwt.exceptions import ExpiredSignatureError
+from jwt.exceptions import ExpiredSignatureError, InvalidSignatureError, InvalidTokenError
 
 SCHEMA_NAME = os.getenv('DB_SCHEMA')
-REGISTER_REQUIRED_FIELDS=os.getenv('REGISTER_FIELDS')
+REGISTER_REQUIRED_FIELDS=os.getenv('REGISTER_FIELDS').split(',')
+LOGIN_FIELDS=os.getenv('LOGIN_FIELDS').split(',')
+BOOK_REQUIRED_FIELDS=os.getenv('BOOK_FIELDS').split(',')
+BOOK_NAME=os.getenv('DELETE_BOOK_NAME').split(' ')
 
 db=SQLAlchemy()
 jwt=JWTManager()

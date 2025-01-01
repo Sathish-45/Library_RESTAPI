@@ -2,38 +2,43 @@ from app import db
 from collections import Counter
 from users.model.users import User
 from flask import jsonify, request
-from config import create_access_token, get_jwt_identity, jwt_required, token_is_valid, ExpiredSignatureError, REGISTER_REQUIRED_FIELDS
+from config import create_access_token, get_jwt_identity, REGISTER_REQUIRED_FIELDS, LOGIN_FIELDS
 
 class Controller:
+    """
+    class Contoller will have all the methods that are used by User Resource class
+    """
 
     def do_delete(self):
         if request.is_json:
             data=request.get_json()
         else:
-            data=request.form()
-        email=data['email']
-        password=data['password']
+            data=request.form
 
-        try:    
-            user=User.query.filter_by(email=email).first()
-            if user:
-                if User.query.filter_by(email=email, password=str(password)).first():
-                    User.query.filter_by(email=email).delete()
-                    db.session.commit()
-                    return jsonify(message='User Data Removed Successfully '),200
-                else:
-                    return jsonify(message='Username and Password Mismatch'),401
+        if Counter(LOGIN_FIELDS)!=Counter(data.keys()):
+            return jsonify(message=f'Required Fields = {','.join(LOGIN_FIELDS)}'),400  
+
+        email=data['email']
+        password=data['password'] 
+        
+        user=User.query.filter_by(email=email).first()
+        if user:
+            if User.query.filter_by(email=email, password=str(password)).first():
+                User.query.filter_by(email=email).delete()
+                db.session.commit()
+                return jsonify(message='User Data Removed Successfully '),200
             else:
-                return jsonify(message='User Not Available !'),404
-        except Exception as e:
-            return jsonify(message=f'Exception Occurred, Exception Message = {e}'),400
-    
+                return jsonify(message='Username and Password Mismatch'),401
+        else:
+            return jsonify(message='User Not Available !'),404
+
+
     def do_patch(self):
         if request.is_json:
             data=request.get_json()
             update_dict={i:data[i] for i in data.keys()}    
         else:
-            data=request.form()
+            data=request.form
             update_dict={i:data[i] for i in data.keys()}
         update_dict.update({"modified_by":get_jwt_identity()})
         
@@ -63,10 +68,10 @@ class Controller:
         if request.is_json:
             data=request.get_json()
         else:
-            data=request.form()
-            
+            data=request.form
+        
         if Counter(REGISTER_REQUIRED_FIELDS)!=Counter(data.keys()):
-            return jsonify(message=f'Required Fields = {''.join(REGISTER_REQUIRED_FIELDS)}'),400
+            return jsonify(message=f'Required Fields = {','.join(REGISTER_REQUIRED_FIELDS)}'),400
         
         first_name=data['first_name']
         last_name=data['last_name']
@@ -88,7 +93,7 @@ class Controller:
         if request.is_json:
             data=request.get_json()
         else:
-            data=request.form()
+            data=request.form
         email=data['email']
         password=data['password']
 
