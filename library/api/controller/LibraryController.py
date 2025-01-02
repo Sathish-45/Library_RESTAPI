@@ -57,7 +57,7 @@ class Controller:
             data=request.get_json()
         else:
             data=request.form
-        print(data.keys())
+
         if Counter(data.keys()) != Counter(BOOK_NAME):
             return jsonify(message=f'Please fill the Required Field = {','.join(BOOK_NAME)}'),400
 
