@@ -66,13 +66,12 @@ class GetBookByName(Resource):
                 data=request.get_json()
             else:
                 data=request.form
-                
-            name=data.get('book_name')
-            if name:
+            if 'book_name' not in data.keys():
+                return make_response(jsonify(message='Please provide book name'),400)
+            else:
+                name=data.get('book_name')
                 response=controller.get_books(name=name)
                 return make_response(response)
-            else:
-                return make_response(jsonify(message='Please provide book name'),404)
         except ExpiredSignatureError:
             return make_response(jsonify(message="Token has expired. Please log in again."), 401)
         except Exception as e:

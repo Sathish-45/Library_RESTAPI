@@ -24,7 +24,7 @@ api.add_resource(UserRegister,'/register')
 api.add_resource(UserLoginResource,'/login')
 api.add_resource(UserResource, '/users')
 api.add_resource(LibraryResource, '/library')
-api.add_resource(GetBookByName, '/library/id')
+api.add_resource(GetBookByName, '/library/book_name')
 
 
 if __name__=='__main__':
